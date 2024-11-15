@@ -18,7 +18,7 @@ useEffect(() => {
 fetchProduct()
 }, [Productid,products])
   return (
-    <div>Product</div>
+    <div className='text-sm' >Product</div>
   )
 }
 
