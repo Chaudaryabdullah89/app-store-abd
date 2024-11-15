@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import assets from '../assets/assets';
-import { ShopContext } from '../context/shopcontext';
+import { ShopContext } from '../Context/shopcontext';
 const Search = () => {
     const {search,setSearch,showsearch,setShowsearch} = useContext(ShopContext);
     const [visible, setVisible] = useState(false);
