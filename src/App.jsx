@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import './App.css'
 import Fotter from './Components/Fotter'
@@ -26,7 +25,7 @@ import Register from './Pages/Register'
 // import UserList from './Pages/UserList'
 
   function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
     <>
