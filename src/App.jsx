@@ -29,7 +29,7 @@ import Register from './Pages/register'
 
   return (
     <>
-{/*      <Navbar /> */}
+     <Navbar />
 <Search />
       <Routes>
         <Route path='/' element={<Home />} />
