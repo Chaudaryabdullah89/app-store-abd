@@ -24,50 +24,24 @@ import Register from './Pages/register'
 // import UserEdit from './Pages/UserEdit'
 // import UserList from './Pages/UserList'
 
-  function App() {
-
-
+function App() {
   return (
     <>
-     <Navbar />
-<Search />
+      <Navbar />
+      <Search />
       <Routes>
         <Route path='/' element={<Home />} />
-    
+        <Route path='/about' element={<About />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/product/:productid' element={<Product />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/placeorder' element={<PlaceOrder />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/order' element={<Order />} />
+        <Route path='/collection' element={<Collection />} />
       </Routes>
-      <Routes>
-      <Route path='/about' element={<About/>} />
-
-      </Routes>
-      <Routes>
-      <Route path='/contact' element={<Contact />} />
-
-      </Routes>
-      <Routes>
-      <Route path='/product/:id' element={<Product />} />
-      </Routes>
-      <Routes>
-      <Route path='/cart' element={<Cart />} />
-      </Routes>
-      <Routes>
-      <Route path='/placeorder' element={<PlaceOrder />} />
-      </Routes>
-      <Routes>
-      <Route path='/login' element={<Login />} />
-      </Routes>
-      <Routes>
-      <Route path='/register' element={<Register />} />
-      </Routes>
-      <Routes>
-    
-      <Route path='/order' element={<Order />} />
-      </Routes>
-   
-      <Routes >
-      <Route path='/collection' element={<Collection />} />
-
-      </Routes>
-<Fotter />
+      <Fotter />
     </>
   )
 }
