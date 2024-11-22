@@ -26,7 +26,7 @@ const bestseller = products.filter(product => product.bestseller === true)
 {
     bestseller.map((item, index) => (
 
-        <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image} />
+        <ProductItem key={index} id={item._id} name={item.name} price={item.price} image={item.image[0]} />
     ))
 
 }
