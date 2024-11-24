@@ -58,7 +58,7 @@ return (
 
 </div>
   </div>
-  <input type="number" min={1} defaultValue={item.quantity}  className='border sm:max-w-20 p-2 justify-center  items-center  '  />
+  <input type="number" min={1} defaultValue={item.quantity} onChange={(e)=> e.target.value === '' || e.target.value === '0'  ? null : updatequantity(item._id,item.size,Number(e.target.value)) }  className='border sm:max-w-20 p-2 justify-center  items-center  '  />
   <img src={assets.bin_icon} className='w-4 mt-3 mr-4 sm:w-5 cursor-pointer' alt=""  onClick={()=>{updatequantity(item._id,item.size,0)}} />
   </div>
 </div>
