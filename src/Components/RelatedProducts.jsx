@@ -7,7 +7,7 @@ import Title from './Title';
 const RelatedProducts = ({ category, subCategory }) => {
     const { products } = useContext(ShopContext);
 const [relatedProducts, setRelatedProducts] = useState([])
-console.log(relatedProducts);
+// console.log(relatedProducts);
 
     useEffect(() => {
         if (products.length > 0) {

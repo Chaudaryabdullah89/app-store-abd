@@ -6,7 +6,7 @@ import { ShopContext } from "../Context/shopcontext";
 const Product = () => {
   const { productid } = useParams();
   console.log(productid);
-  const { products , currency } = useContext(ShopContext);
+  const { products , currency,addtocart } = useContext(ShopContext);
   const [productdata, setproductdata] = useState(false);
   const [image, setimage] = useState("");
   const [size,setsize] = useState('');
@@ -15,7 +15,7 @@ const Product = () => {
       if (item._id === productid) {
         setproductdata(item);
         setimage(item.image[0]);
-        console.log(item);
+        // console.log(item);
 
         return null;
       }
@@ -28,7 +28,7 @@ const Product = () => {
     <div>
       <div className="border-t-2 pt-10 transition-all ease-in duration-500 text-start">
         {/* product data */}
-        <div className=" flex gap-12 sm:gap-12 flex col sm:flex-row ">
+        <div className=" flex gap-12 sm:gap-12 flex-col sm:flex-row ">
           {/* product images */}
           <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
             <div className="flex flex-col overflow-x-auto w-[25%]  sm:overflow-y-auto justify-between sm:w-[18.7%] w-full ">
@@ -71,7 +71,9 @@ const Product = () => {
                     ))}
                    </div>
             </div>
-            <button className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700 ">ADD TO CART</button>
+            <button className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700 " onClick={()=>{
+              addtocart(productdata._id,size);
+            }} >ADD TO CART</button>
             <hr  className="mt-8 sm:w-4/5" />
             <div className="text-sm text-gray-500 mt-5 flex flex-col gap-1" >
                 <p>100% Orignal Product</p>
