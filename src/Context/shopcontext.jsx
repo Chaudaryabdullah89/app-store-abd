@@ -49,8 +49,14 @@ return
     return TotalCount;
  }
 
+  const updatequantity =  async (itemid,size,quantity)=>{
+   let cartdata = structuredClone(cartitems)
+   cartdata[itemid][size] = quantity
+   setCartitems(cartdata)
+  }
+
     const value ={
-products,currency,delivery_fee,search,setSearch,showsearch,setShowsearch,cartitems,addtocart,getCartCount
+products,currency,delivery_fee,search,setSearch,showsearch,setShowsearch,cartitems,addtocart,getCartCount,updatequantity
     }
     return (
  
