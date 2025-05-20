@@ -96,6 +96,29 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       
       console.log('Attempting login for:', email);
+
+      // Check if this is a Google login (password is actually the access token)
+      if (password.length > 100) { // Google access tokens are typically longer
+        console.log('Processing Google login');
+        // For Google login, we already have the token and user data from the backend
+        // Just need to set them in the context and localStorage
+        setToken(password); // password is actually the token
+        setUser(JSON.parse(localStorage.getItem('user')));
+        api.defaults.headers.common['Authorization'] = `Bearer ${password}`;
+        
+        // Navigate based on user role
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/');
+        }
+        
+        setLoading(false);
+        return true;
+      }
+
+      // Regular login flow
       const response = await api.post('/auth/login', { email, password });
       console.log('Login response:', response.data);
       
@@ -208,4 +231,5 @@ AuthProvider.propTypes = {
   children: PropTypes.node.isRequired
 };
 
+export { AuthContext };
 export default AuthContext; 

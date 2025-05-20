@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from './axios';
 import axios from 'axios';
+import { useAuth } from '../Context/AuthContext';
 
 // Create a separate axios instance for Google API calls
 const googleApi = axios.create({
@@ -14,6 +15,7 @@ const googleApi = axios.create({
 
 export const GoogleAuthButton = ({ disabled }) => {
   const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
 
   const handleSuccess = async (response) => {
     try {
@@ -44,49 +46,22 @@ export const GoogleAuthButton = ({ disabled }) => {
         user_info: userInfo
       });
         
-      if (authResponse.data && authResponse.data.token) {
-        // Store token and user data
+      if (authResponse.data) {
         const { token, user } = authResponse.data;
         
-        // Store in localStorage
-        localStorage.setItem('token', token);
+        // Store user data in localStorage first
         localStorage.setItem('user', JSON.stringify(user));
         
-        // Set auth header
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        // Use the AuthContext login function to update the state
+        await authLogin(user.email, token);
         
-        // Verify token and get fresh user data
-        try {
-          const verifyResponse = await api.get('/users/me');
-          if (verifyResponse.data) {
-            // Update stored user data with fresh data
-            const freshUserData = verifyResponse.data;
-            localStorage.setItem('user', JSON.stringify(freshUserData));
-            
-            // Show success message
-            toast.success('Login successful!');
-            
-            // Redirect based on role
-            if (freshUserData.role === 'admin') {
-              navigate('/admin/dashboard');
-            } else {
-              navigate('/');
-            }
-          }
-        } catch (verifyError) {
-          console.error('Token verification failed:', verifyError);
-          throw new Error('Failed to verify authentication');
-        }
+        // Show success message
+        toast.success('Login successful!');
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
       console.error('Google auth error:', error);
-      
-      // Clear any partial auth data
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      delete api.defaults.headers.common['Authorization'];
       
       let errorMessage = 'Google authentication failed. Please try again.';
       if (error.response?.data?.message) {

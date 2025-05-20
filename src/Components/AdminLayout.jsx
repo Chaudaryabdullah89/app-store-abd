@@ -1,5 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { FiHome, FiShoppingBag, FiUsers, FiSettings, FiLogOut, FiFileText } from 'react-icons/fi';
+import { 
+  FiHome, 
+  FiShoppingBag, 
+  FiUsers, 
+  FiSettings, 
+  FiLogOut,
+  FiFileText,
+  FiShoppingCart
+} from 'react-icons/fi';
 import { useAuth } from '../Context/AuthContext';
 import PropTypes from 'prop-types';
 
@@ -7,22 +15,27 @@ const AdminLayout = ({ children }) => {
   const location = useLocation();
   const { logout } = useAuth();
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
-
-  const menuItems = [
-    { path: '/admin/dashboard', icon: FiHome, label: 'Dashboard' },
-    { path: '/admin/products', icon: FiShoppingBag, label: 'Products' },
-    { path: '/admin/blogs', icon: FiFileText, label: 'Blogs' },
-    { path: '/admin/customers', icon: FiUsers, label: 'Users' },
-    { path: '/admin/settings', icon: FiSettings, label: 'Settings' },
+  const navigation = [
+    { name: 'Dashboard', href: '/admin/dashboard', icon: FiHome },
+    { name: 'Orders', href: '/admin/orders', icon: FiShoppingCart },
+    { name: 'Products', href: '/admin/products', icon: FiShoppingBag },
+    { name: 'Customers', href: '/admin/customers', icon: FiUsers },
+    { name: 'Blogs', href: '/admin/blogs', icon: FiFileText },
+    { name: 'Settings', href: '/admin/settings', icon: FiSettings },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
+      <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-center h-16 border-b">
@@ -30,51 +43,45 @@ const AdminLayout = ({ children }) => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
-            {menuItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  isActive(item.path)
-                    ? 'bg-gray-900 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                <item.icon className="w-5 h-5 mr-3" />
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              to="/admin/settings"
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                location.pathname === '/admin/settings'
-                  ? 'bg-blue-50 text-blue-600'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <FiSettings className="w-5 h-5" />
-              <span>Settings</span>
-            </Link>
+          <nav className="flex-1 px-4 py-4 space-y-1">
+            {navigation.map((item) => {
+              const isActive = location.pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${
+                    isActive
+                      ? 'bg-gray-900 text-white'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <item.icon className="mr-3 h-5 w-5" />
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Logout Button */}
           <div className="p-4 border-t">
             <button
-              onClick={logout}
-              className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={handleLogout}
+              className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900"
             >
-              <FiLogOut className="w-5 h-5 mr-3" />
+              <FiLogOut className="mr-3 h-5 w-5" />
               Logout
             </button>
           </div>
         </div>
-      </aside>
+      </div>
 
       {/* Main Content */}
-      <main className="ml-64">
+      <div className="pl-64">
+        <main className="p-8">
           {children}
         </main>
+      </div>
     </div>
   );
 };
