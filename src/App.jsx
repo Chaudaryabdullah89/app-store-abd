@@ -61,7 +61,9 @@ import { loadStripe } from '@stripe/stripe-js';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Load the Stripe public key from environment variables
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  : null;
 
 function App() {
   const location = useLocation();
@@ -84,63 +86,73 @@ function App() {
     document.title = title;
   }, [location]);
 
+  // Wrap the app content with Stripe Elements only if stripePromise is available
+  const appContent = (
+    <>
+      <Preloader />
+      <div className='max-w-[1280px] mx-auto'>
+        <Navbar />
+      </div>
+      <Search />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path='/' element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/product/:productid' element={<Product />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/placeorder' element={<PlaceOrder />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/order' element={<Order />} />
+          <Route path='/collection' element={<Collection />} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/place-order" element={<PlaceOrder />} />
+          <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/orders" element={<ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute>} />
+          <Route path="/admin/products" element={<ProtectedRoute requireAdmin><AdminProducts /></ProtectedRoute>} />
+          <Route path="/admin/add-product" element={<ProtectedRoute requireAdmin><AddProduct /></ProtectedRoute>} />
+          <Route path="/admin/edit-product/:id" element={<ProtectedRoute requireAdmin><EditProduct /></ProtectedRoute>} />
+          <Route path="/admin/customers" element={<ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute>} />
+          <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettings /></ProtectedRoute>} />
+          <Route path="/admin/blogs" element={<ProtectedRoute requireAdmin><AdminBlogs /></ProtectedRoute>} />
+          <Route path="/admin/add-blog" element={<ProtectedRoute requireAdmin><AddBlog /></ProtectedRoute>} />
+          <Route path="/admin/edit-blog/:id" element={<ProtectedRoute requireAdmin><AddBlog /></ProtectedRoute>} />
+          <Route path="/product" element={<Product />}>
+            <Route path=':productId' element={<Product />} />
+          </Route>
+          <Route path='/orders' element={<Orders />} />
+          <Route path="/order/:orderId" element={<OrderConfirmation />} />
+          <Route path="/request-reset" element={<RequestReset />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/auth-success" element={<AuthSuccess />} />
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
+          <Route path="/write-blog" element={<WriteBlog />} />
+          {/* <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+          <Route path="/legal/terms" element={<TermsConditions />} />
+          <Route path="/legal/shipping" element={<ShippingPolicy />} />
+          <Route path="/legal/returns" element={<ReturnPolicy />} /> */}
+          <Route path="*" element={<div className='text-center text-2xl'>404 Not Found</div>} />
+        </Routes>
+      </AnimatePresence>
+      <Footer />
+    </>
+  );
+
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <AuthProvider>
         <ShopContextProvider>
-          <Elements stripe={stripePromise} options={{ locale: 'auto' }}>
-            <Preloader />
-            <div className='max-w-[1280px] mx-auto'>
-              <Navbar />
-            </div>
-            <Search />
-            <AnimatePresence mode="wait">
-              <Routes location={location} key={location.pathname}>
-                <Route path='/' element={<Home />} />
-                <Route path='/about' element={<About />} />
-                <Route path='/contact' element={<Contact />} />
-                <Route path='/product/:productid' element={<Product />} />
-                <Route path='/cart' element={<Cart />} />
-                <Route path='/placeorder' element={<PlaceOrder />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/register' element={<Register />} />
-                <Route path='/order' element={<Order />} />
-                <Route path='/collection' element={<Collection />} />
-                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                <Route path="/place-order" element={<PlaceOrder />} />
-                <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
-                <Route path="/admin/login" element={<AdminLogin />} />
-                <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/admin/orders" element={<ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute>} />
-                <Route path="/admin/products" element={<ProtectedRoute requireAdmin><AdminProducts /></ProtectedRoute>} />
-                <Route path="/admin/add-product" element={<ProtectedRoute requireAdmin><AddProduct /></ProtectedRoute>} />
-                <Route path="/admin/edit-product/:id" element={<ProtectedRoute requireAdmin><EditProduct /></ProtectedRoute>} />
-                <Route path="/admin/customers" element={<ProtectedRoute requireAdmin><AdminCustomers /></ProtectedRoute>} />
-                <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettings /></ProtectedRoute>} />
-                <Route path="/admin/blogs" element={<ProtectedRoute requireAdmin><AdminBlogs /></ProtectedRoute>} />
-                <Route path="/admin/add-blog" element={<ProtectedRoute requireAdmin><AddBlog /></ProtectedRoute>} />
-                <Route path="/admin/edit-blog/:id" element={<ProtectedRoute requireAdmin><AddBlog /></ProtectedRoute>} />
-                <Route path="/product" element={<Product />}>
-                  <Route path=':productId' element={<Product />} />
-                </Route>
-                <Route path='/orders' element={<Orders />} />
-                <Route path="/order/:orderId" element={<OrderConfirmation />} />
-                <Route path="/request-reset" element={<RequestReset />} />
-                <Route path="/reset-password/:token" element={<ResetPassword />} />
-                <Route path="/auth-success" element={<AuthSuccess />} />
-                <Route path="/blog" element={<BlogList />} />
-                <Route path="/blog/:slug" element={<BlogDetail />} />
-                <Route path="/write-blog" element={<WriteBlog />} />
-                {/* <Route path="/legal/privacy" element={<PrivacyPolicy />} />
-                <Route path="/legal/terms" element={<TermsConditions />} />
-                <Route path="/legal/shipping" element={<ShippingPolicy />} />
-                <Route path="/legal/returns" element={<ReturnPolicy />} /> */}
-                <Route path="*" element={<div className='text-center text-2xl'>404 Not Found</div>} />
-              </Routes>
-            </AnimatePresence>
-            
-              <Footer />
-          </Elements>
+          {stripePromise ? (
+            <Elements stripe={stripePromise} options={{ locale: 'auto' }}>
+              {appContent}
+            </Elements>
+          ) : (
+            appContent
+          )}
         </ShopContextProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
