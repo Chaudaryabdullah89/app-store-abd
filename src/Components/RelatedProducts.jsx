@@ -24,7 +24,7 @@ const [relatedProducts, setRelatedProducts] = useState([])
 <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
 {
 relatedProducts.map((product, index) => (
-  <Productitem key={`${product._id}-${index}`} id={product._id} name={product.name} price={product.price} image={product.image[0]} />
+  <Productitem key={`${product._id}-${index}`} id={product._id} name={product.name} price={product.price} image={product.image} />
 ))
 }
 </div>
