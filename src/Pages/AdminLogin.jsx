@@ -7,30 +7,48 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setError('');
+    setLoading(true);
+
     if (!email || !password) {
+      setError('Please fill in all fields');
       toast.error('Please fill in all fields');
+      setLoading(false);
       return;
     }
 
     try {
-      setLoading(true);
-      const user = await login(email, password);
+      console.log('Starting admin login process...');
+      console.log('Login attempt with email:', email);
       
-      if (user?.isAdmin) {
+      const userData = await login(email, password);
+      console.log('Login response:', userData);
+      
+      if (userData && userData.role === 'admin') {
+        toast.success('Login successful!');
+        console.log('Login successful, redirecting to: /admin/dashboard');
         navigate('/admin/dashboard');
       } else {
-        toast.error('Access denied. Admin privileges required.');
-        navigate('/login');
+        throw new Error('Access denied. Admin privileges required.');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      // Error is already handled in AuthContext
+      console.error('Login error details:', {
+        message: err.message,
+        response: err.response,
+        status: err.response?.status
+      });
+      
+      setError(err.message || 'Login failed. Please try again.');
+      
+      if (err.message.includes('Admin privileges')) {
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }
@@ -43,6 +61,11 @@ const AdminLogin = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Admin Login
           </h2>
+          {error && (
+            <div className="mt-2 text-center text-sm text-red-600">
+              {error}
+            </div>
+          )}
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">

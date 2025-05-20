@@ -119,7 +119,10 @@ const Product = () => {
                   {productdata.sizes.map((s) => (
                     <button
                       key={s}
-                      onClick={() => setsize(s)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setsize(s);
+                      }}
                       className={`px-4 py-2 border rounded-md ${
                         size === s ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'
                       } hover:bg-gray-100 transition-colors`}
@@ -133,13 +136,19 @@ const Product = () => {
 
             <div className="flex gap-4 mt-5">
               <button
-                onClick={handleAddToCart}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart();
+                }}
                 className="flex-1 bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors"
               >
                 Add to Cart
               </button>
               <button
-                onClick={handleBuyNow}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBuyNow();
+                }}
                 className="flex-1 bg-white text-gray-900 border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Buy Now
@@ -162,10 +171,7 @@ const Product = () => {
         </div>
         <div className="flex flex-col text-start gap-4 border py-6 text-sm text-gray-500">
           <p className="px-3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit minus ipsum vero minima, officia modi quasi facilis, ullam similique eum ut voluptatum qui magni nisi debitis facere illo, culpa aliquid? Fugit voluptas, sint ratione libero tenetur sapiente dolorum ipsum corrupti maxime voluptatibus.
-          </p>
-          <p className="px-3">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Corporis sapiente veniam atque iure molestias quibusdam odit earum nostrum, eius sunt qui incidunt provident fugiat perferendis autem neque ad quaerat pariatur perspiciatis quos architecto fuga quas. Impedit, quidem nisi aspernatur quos suscipit dignissimos facilis possimus numquam? Provident necessitatibus voluptate commodi iste.
+            {productdata.description}
           </p>
         </div>
       </div>

@@ -139,9 +139,13 @@ const BlogDetail = () => {
         </div>
         {blog.featuredImage && (
           <img
-            src={`http://localhost:5000${blog.featuredImage}`}
+            src={blog.featuredImage.startsWith('http') ? blog.featuredImage : `http://localhost:5000${blog.featuredImage}`}
             alt={blog.title}
             className="w-full h-96 object-cover rounded-lg mb-8"
+            onError={(e) => {
+              console.error('Error loading image:', blog.featuredImage);
+              e.target.src = '/placeholder-blog.jpg'; // Fallback image
+            }}
           />
         )}
       </div>

@@ -1,29 +1,31 @@
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
-  const { user, token, loading } = useAuth();
+  const { user, token, loading, isAdmin } = useAuth();
 
-  // Show loading state
+  console.log('ProtectedRoute state:', { 
+    hasUser: !!user, 
+    hasToken: !!token, 
+    loading, 
+    requireAdmin,
+    isAdmin: isAdmin()
+  });
+
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
-  // Check if user is authenticated
   if (!user || !token) {
     console.log('No user or token found, redirecting to login');
-    return <Navigate to={requireAdmin ? "/admin/login" : "/login"} replace />;
+    return <Navigate to="/login" />;
   }
 
-  // Check if admin access is required
-  if (requireAdmin && user.role !== 'admin') {
+  if (requireAdmin && !isAdmin()) {
     console.log('Admin access required, redirecting to home');
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" />;
   }
 
   return children;

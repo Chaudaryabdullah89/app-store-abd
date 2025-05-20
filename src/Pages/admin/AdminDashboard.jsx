@@ -50,15 +50,28 @@ const AdminDashboard = () => {
         console.error('API Error:', {
           status: error.response?.status,
           message: error.response?.data?.message || error.message,
-          endpoint: error.config?.url
+          endpoint: error.config?.url,
+          headers: error.config?.headers
         });
         throw error;
       });
+
+      // Validate responses
+      if (!ordersResponse?.data || !productsResponse?.data || !customersResponse?.data) {
+        throw new Error('Invalid response data received from server');
+      }
 
       // Validate and ensure we have arrays
       const orders = Array.isArray(ordersResponse.data) ? ordersResponse.data : [];
       const products = Array.isArray(productsResponse.data) ? productsResponse.data : [];
       const customers = Array.isArray(customersResponse.data) ? customersResponse.data : [];
+
+      // Log data for debugging
+      console.log('Dashboard data received:', {
+        ordersCount: orders.length,
+        productsCount: products.length,
+        customersCount: customers.length
+      });
 
       // Calculate statistics
       const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);

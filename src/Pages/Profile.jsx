@@ -8,7 +8,7 @@ import { useAuth } from '../Context/AuthContext';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState(null);
@@ -278,15 +278,13 @@ const Profile = () => {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
-      await api.post('/users/logout');
-      navigate('/login');
+      logout();
       toast.success('Logged out successfully');
     } catch (error) {
       console.error('Error logging out:', error);
       toast.error('Failed to logout properly');
-      navigate('/login');
     }
   };
 

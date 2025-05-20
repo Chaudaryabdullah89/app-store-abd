@@ -4,9 +4,12 @@ import { toast } from 'react-toastify';
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
   },
-  withCredentials: true // Enable sending cookies with requests
+  withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN'
 });
 
 let isRefreshing = false;
@@ -26,44 +29,70 @@ const processQueue = (error, token = null) => {
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
+    console.log('Making request:', {
+      url: config.url,
+      method: config.method,
+      data: config.data,
+      headers: config.headers
+    });
+
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    
-    // If token exists, add it to the headers
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('No token found in localStorage');
     }
-    
+
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
+    console.error('Request error:', {
+      message: error.message,
+      config: error.config
+    });
     return Promise.reject(error);
   }
 );
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    console.error('Response error:', error);
-    
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error('Error data:', error.response.data);
-      console.error('Error status:', error.response.status);
-      console.error('Error headers:', error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      console.error('Error request:', error.request);
-      toast.error('No response from server. Please check your connection.');
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error message:', error.message);
-      toast.error('An error occurred. Please try again.');
+  (response) => {
+    console.log('Response received:', {
+      status: response.status,
+      data: response.data,
+      headers: response.headers
+    });
+    return response;
+  },
+  (error) => {
+    console.error('Response error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        headers: error.config?.headers
+      }
+    });
+
+    // Handle specific error cases
+    if (error.response?.status === 401) {
+      console.warn('Authentication error - redirecting to login');
+      // Clear auth data and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    } else if (error.response?.status === 403) {
+      console.warn('Authorization error - user may not have required permissions');
+      toast.error('You do not have permission to access this resource');
     }
-    
+
+    // Show error message to user
+    const errorMessage = error.response?.data?.message || 'An error occurred. Please try again.';
+    toast.error(errorMessage);
+
     return Promise.reject(error);
   }
 );

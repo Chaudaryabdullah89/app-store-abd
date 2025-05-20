@@ -49,12 +49,30 @@ export default defineConfig(({ command }) => ({
     port: 5173,
     open: true,
     cors: true,
+    headers: {
+      'Content-Security-Policy': `
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com;
+        img-src 'self' data: https:;
+        font-src 'self' https://fonts.gstatic.com;
+        frame-src 'self' https://accounts.google.com;
+        connect-src 'self' http://localhost:5000 https://accounts.google.com;
+      `.replace(/\s+/g, ' ').trim()
+    },
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:5000',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
+        ws: true
       },
+      '/google-api': {
+        target: 'https://www.googleapis.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/google-api/, '')
+      }
     },
   },
   resolve: {

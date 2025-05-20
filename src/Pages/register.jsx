@@ -25,20 +25,48 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
-      setIsLoading(false);
+    console.log('Form submitted with data:', { ...formData, password: '[REDACTED]' });
+    
+    // Validate form data
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      console.log('Validation failed: Missing required fields');
+      toast.error('All fields are required');
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      console.log('Validation failed: Passwords do not match');
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      console.log('Validation failed: Password too short');
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      await register(formData.name, formData.email, formData.password);
+      console.log('Attempting registration for:', formData.email);
+      const result = await register(formData.name, formData.email, formData.password);
+      console.log('Registration successful:', result);
+      toast.success('Registration successful!');
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
-      toast.error(error.response?.data?.message || 'Registration failed');
+      
+      // Handle specific error cases
+      if (error.message.includes('already exists')) {
+        toast.error('This email is already registered. Please try logging in instead.');
+        // Clear the email field since it's already registered
+        setFormData(prev => ({ ...prev, email: '' }));
+      } else {
+        toast.error(error.message || 'Registration failed. Please try again.');
+      }
+      
+      // Clear password fields on error
+      setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
     } finally {
       setIsLoading(false);
     }

@@ -78,19 +78,44 @@ export const ShopContextProvider = (props) => {
   };
 
   const addtocart = (itemid, size = 'default') => {
-    setCartItems(prevCart => {
-      const newCart = { ...prevCart };
-      if (!newCart[itemid]) {
-        newCart[itemid] = {};
+    try {
+      // Find the product to check stock
+      const product = products.find(p => p._id === itemid);
+      if (!product) {
+        toast.error('Product not found');
+        return;
       }
-      if (newCart[itemid][size]) {
-        newCart[itemid][size] += 1;
-      } else {
-        newCart[itemid][size] = 1;
+
+      // Check if product is in stock
+      if (product.stock <= 0) {
+        toast.error('Product is out of stock');
+        return;
       }
-      return newCart;
-    });
-    toast.success('Item added to cart');
+
+      // Check if adding this item would exceed stock
+      const currentQuantity = cartItems[itemid]?.[size] || 0;
+      if (currentQuantity + 1 > product.stock) {
+        toast.error('Cannot add more items than available in stock');
+        return;
+      }
+
+      setCartItems(prevCart => {
+        const newCart = { ...prevCart };
+        if (!newCart[itemid]) {
+          newCart[itemid] = {};
+        }
+        if (newCart[itemid][size]) {
+          newCart[itemid][size] += 1;
+        } else {
+          newCart[itemid][size] = 1;
+        }
+        return newCart;
+      });
+      toast.success('Item added to cart');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error('Failed to add item to cart');
+    }
   };
 
   const getCartCount = () => {
@@ -104,20 +129,50 @@ export const ShopContextProvider = (props) => {
   };
 
   const updatequantity = (itemid, size, quantity) => {
-    setCartItems(prevCart => {
-      const newCart = { ...prevCart };
-      if (newCart[itemid]) {
-        if (quantity <= 0) {
-          delete newCart[itemid][size];
-          if (Object.keys(newCart[itemid]).length === 0) {
-            delete newCart[itemid];
-          }
-        } else {
-          newCart[itemid][size] = quantity;
-        }
+    try {
+      // Find the product to check stock
+      const product = products.find(p => p._id === itemid);
+      if (!product) {
+        toast.error('Product not found');
+        return;
       }
-      return newCart;
-    });
+
+      // Check if quantity is valid
+      if (quantity < 0) {
+        toast.error('Invalid quantity');
+        return;
+      }
+
+      // Check if quantity exceeds stock
+      if (quantity > product.stock) {
+        toast.error('Cannot add more items than available in stock');
+        return;
+      }
+
+      setCartItems(prevCart => {
+        const newCart = { ...prevCart };
+        if (newCart[itemid]) {
+          if (quantity <= 0) {
+            delete newCart[itemid][size];
+            if (Object.keys(newCart[itemid]).length === 0) {
+              delete newCart[itemid];
+            }
+          } else {
+            newCart[itemid][size] = quantity;
+          }
+        }
+        return newCart;
+      });
+
+      if (quantity === 0) {
+        toast.success('Item removed from cart');
+      } else {
+        toast.success('Cart updated');
+      }
+    } catch (error) {
+      console.error('Error updating cart:', error);
+      toast.error('Failed to update cart');
+    }
   };
 
   const getTotalCartAmount = () => {

@@ -34,15 +34,22 @@ const AdminLogin = () => {
       console.log('Login response:', success);
       
       if (success) {
-        const token = localStorage.getItem('token');
-        console.log('Stored token:', token);
+        const user = JSON.parse(localStorage.getItem('user'));
+        console.log('User data:', user);
         
-        // Get the redirect path from location state or default to admin dashboard
-        const from = location.state?.from || '/admin/dashboard';
-        console.log('Login successful, redirecting to:', from);
-        
-        toast.success('Login successful!');
-        navigate(from, { replace: true });
+        if (user && user.role === 'admin') {
+          // Get the redirect path from location state or default to admin dashboard
+          const from = location.state?.from || '/admin/dashboard';
+          console.log('Login successful, redirecting to:', from);
+          
+          toast.success('Login successful!');
+          navigate(from, { replace: true });
+        } else {
+          // Clear auth data and show error
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          throw new Error('Access denied. Admin privileges required.');
+        }
       }
     } catch (error) {
       console.error('Login error details:', {
