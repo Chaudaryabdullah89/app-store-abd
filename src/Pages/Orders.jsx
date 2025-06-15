@@ -3,35 +3,70 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/axios';
 import { toast } from 'react-toastify';
+import { useAuth } from '../Context/AuthContext';
 
 const Orders = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
+    if (!user) {
+      console.log('No user found, redirecting to login');
+      toast.error('Please login to view your orders');
+      navigate('/login');
+      return;
+    }
+    console.log('User found:', user);
     fetchOrders();
-  }, []);
+  }, [user, navigate]);
 
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/orders/my-orders');
+      console.log('Fetching orders...');
+      
+      const token = localStorage.getItem('token');
+      console.log('Token from localStorage:', token ? 'Present' : 'Missing');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      console.log('Making request to /orders/my-orders');
+      const response = await api.get('/orders/my-orders', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      console.log('Orders response:', response.data);
       
       if (response.data && Array.isArray(response.data)) {
         // Sort orders by date (newest first)
         const sortedOrders = response.data.sort((a, b) => 
           new Date(b.createdAt) - new Date(a.createdAt)
         );
+        console.log('Sorted orders:', sortedOrders);
         setOrders(sortedOrders);
       } else {
-        setOrders([]);
         console.error('Invalid response format:', response.data);
+        setOrders([]);
+        toast.error('Invalid response format from server');
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        headers: error.response?.headers
+      });
+      
       if (error.response?.status === 401) {
+        console.log('Unauthorized - redirecting to login');
         toast.error('Please login to view your orders');
         navigate('/login');
       } else {

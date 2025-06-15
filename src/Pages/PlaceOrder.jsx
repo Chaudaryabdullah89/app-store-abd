@@ -210,8 +210,13 @@ const PlaceOrder = () => {
       // Show success message
       toast.success('Order placed successfully!');
 
-      // Show receipt and login prompt
-      setShowLoginPrompt(true);
+      // Only show login prompt for guest users
+      if (!user) {
+        setShowLoginPrompt(true);
+      } else {
+        // For logged-in users, navigate to order confirmation
+        navigate(`/order/${newOrderId}`);
+      }
       
       // Store order ID in localStorage for later use
       localStorage.setItem('lastOrderId', newOrderId);

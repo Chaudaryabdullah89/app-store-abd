@@ -49,13 +49,13 @@ const AdminOrders = () => {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/orders');
-      setOrders(response.data);
-      calculateStats(response.data);
-      setIsLoading(false);
-    } catch (err) {
-      console.error('Error fetching orders:', err);
+      const response = await api.get('/admin/orders');
+      setOrders(response.data.orders);
+      calculateStats(response.data.orders);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
       toast.error('Failed to fetch orders');
+    } finally {
       setIsLoading(false);
     }
   };

@@ -1,10 +1,13 @@
 import React from 'react';
-import { Routes, Route, useLocation, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthProvider } from './Context/AuthContext';
+import ShopContextProvider from './Context/shopcontext';
 
 // Components
 import Footer from './Components/Fotter';
@@ -52,13 +55,6 @@ import AddBlog from './Pages/admin/AddBlog';
 // import TermsConditions from './Pages/customer-service/TermsConditions';
 // import ShippingPolicy from './Pages/customer-service/ShippingPolicy';
 // import ReturnPolicy from './Pages/customer-service/ReturnPolicy';
-
-// Context & Providers
-import ShopContextProvider from './Context/shopcontext';
-import { AuthProvider } from './Context/AuthContext';
-
-// Third Party
-import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
@@ -111,7 +107,7 @@ function App() {
                 <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/admin/orders" element={<ProtectedRoute requireAdmin><AdminOrders /></ProtectedRoute>} />
+                <Route path="/admin/orders" element={<ProtectedRoute><AdminOrders /></ProtectedRoute>} />
                 <Route path="/admin/products" element={<ProtectedRoute requireAdmin><AdminProducts /></ProtectedRoute>} />
                 <Route path="/admin/add-product" element={<ProtectedRoute requireAdmin><AddProduct /></ProtectedRoute>} />
                 <Route path="/admin/edit-product/:id" element={<ProtectedRoute requireAdmin><EditProduct /></ProtectedRoute>} />
@@ -147,11 +143,4 @@ function App() {
   );
 }
 
-// Wrap the App with BrowserRouter
-const AppWithRouter = () => (
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-);
-
-export default AppWithRouter;
+export default App;
