@@ -1,4 +1,4 @@
-# 🛒 App Store ABD
+# 🛒 Simply Nature
 
 A modern, full-stack e-commerce platform built with **React** (frontend) and **Node.js/Express/MongoDB** (backend). This project provides a robust online shopping experience with advanced features for customers, store owners, and administrators.
 
@@ -58,27 +58,6 @@ A modern, full-stack e-commerce platform built with **React** (frontend) and **N
 
 ---
 
-## 🚀 Getting Started
-
-1. **Clone the repo**
-   ```
-   git clone https://github.com/Chaudaryabdullah89/app-store-abd.git
-   cd app-store-abd
-   ```
-
-2. **Install dependencies**
-   - For frontend: `npm install` (in the root)
-   - For backend: `npm install` (in the Backend directory)
-
-3. **Set environment variables**
-   - Configure `.env` files for both frontend and backend with API URLs, DB connection, and Stripe keys
-
-4. **Run the app**
-   - Backend: `npm run dev` (from Backend)
-   - Frontend: `npm run dev` (from root)
-   - Visit [http://localhost:5173](http://localhost:5173)
-
----
 
 ## 📁 Project Structure
 
@@ -99,17 +78,7 @@ src/
 
 ---
 
-## 🤝 Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
 
 ## 🙏 Acknowledgements
 
